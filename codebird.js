@@ -33,8 +33,6 @@ var IMAGETYPE_GIF = 1,
  */
 
 Codebird = function () {
-    //var XMLHttpRequest = require(modulePath + '/xmlhttprequest').XMLHttpRequest;
-
     var XMLHttpRequest =  Npm.require('xmlhttprequest').XMLHttpRequest;
 
     /**
@@ -115,8 +113,8 @@ Codebird = function () {
     /**
      * Sets the OAuth request or access token and secret (User key)
      *
-     * @param string token  OAuth request or access token
-     * @param string secret OAuth request or access token secret
+     * @param token string OAuth request or access token
+     * @param secret string OAuth request or access token secret
      *
      * @return void
      */
@@ -267,8 +265,8 @@ Codebird = function () {
         }
         // undo replacement for URL parameters
         var url_parameters_with_underscore = ['screen_name'];
-        for (i = 0; i < url_parameters_with_underscore.length; i++) {
-            var param = url_parameters_with_underscore[i].toUpperCase();
+        for (var j = 0; j < url_parameters_with_underscore.length; j++) {
+            var param = url_parameters_with_underscore[j].toUpperCase();
             var replacement_was = param.split('_').join('/');
             method = method.split(replacement_was).join(param);
         }
@@ -276,14 +274,14 @@ Codebird = function () {
         // replace AA by URL parameters
         var method_template = method;
         var match = [];
-        if (match = method.match('/[A-Z_]{2,}/')) {
-            for (var i = 0; i < match.length; i++) {
-                var param = match[i];
+        if (match = method.match(/[A-Z_]{2,}/)) {
+            for (var k = 0; k < match.length; k++) {
+                var param = match[k];
                 var param_l = param.toLowerCase();
                 method_template = method_template.split(param).join(':' + param_l);
                 if (typeof apiparams[param_l] != 'undefined') {
-                    for (j = 0; j < 26; j++) {
-                        method_template = method_template.split(String.fromCharCode(65 + j)).join('_' + String.fromCharCode(97 + j));
+                    for (var l = 0; l < 26; l++) {
+                        method_template = method_template.split(String.fromCharCode(65 + l)).join('_' + String.fromCharCode(97 + l));
                     }
                     c('To call the templated method "' + method_template + '", specify the parameter value for "' + param_l + '".');
                 }
@@ -293,9 +291,9 @@ Codebird = function () {
         }
 
         // replace A-Z by _a-z
-        for (i = 0; i < 26; i++) {
-            method = method.split(String.fromCharCode(65 + i)).join('_' + String.fromCharCode(97 + i));
-            method_template = method_template.split(String.fromCharCode(65 + i)).join('_' + String.fromCharCode(97 + i));
+        for (var m = 0; m < 26; m++) {
+            method = method.split(String.fromCharCode(65 + m)).join('_' + String.fromCharCode(97 + m));
+            method_template = method_template.split(String.fromCharCode(65 + m)).join('_' + String.fromCharCode(97 + m));
         }
 
         var httpmethod = _detectMethod(method_template, apiparams);
@@ -422,7 +420,7 @@ Codebird = function () {
     /**
      * Sort an array by key
      *
-     * @param array a The array to sort
+     * @param a array The array to sort
      * @return array The sorted array
      */
     var _ksort = function (a) {
@@ -440,7 +438,7 @@ Codebird = function () {
             b[d] = a[d]
         }
         for (c in b) if (b.hasOwnProperty) e[c] = b[c];
-        return e
+        return e;
     };
 
     /**
@@ -733,18 +731,18 @@ Codebird = function () {
     };
 
     /**
-     * Calls the API using cURL
-     *
-     * @param string          httpmethod      The HTTP method to use for making the request
-     * @param string          method          The API method to call
-     * @param string          method_template The templated API method to call
-     * @param array  optional params          The parameters to send along
-     * @param bool   optional multipart       Whether to use multipart/form-data
-     * @param function        callback        The function to call with the API call result
-     *
-     * @return mixed The API reply, encoded in the set return_format
-     */
-
+    * Calls the API using cURL
+    *
+    * @param httpmethod         string          The HTTP method to use for making the request
+    * @param method             string          The API method to call
+    * @param method_template    string          The templated API method to call
+    * @param multipart          bool optional   Whether to use multipart/form-data
+    * @param params             Object          Parameters that should be encoded into the request
+    * @param callback           function        The function to call with the API call result
+    * @param uid                string          UID of the user currently being processed
+    *
+    * @return mixed The API reply, encoded in the set return_format
+    */
     var _callApi = function (httpmethod, method, method_template, params, multipart, callback, uid) {
         if (typeof params == 'undefined') {
             var params = {};
@@ -802,8 +800,8 @@ Codebird = function () {
     /**
      * Parses the API reply to encode it in the set return_format
      *
-     * @param string method The method that has been called
-     * @param string reply  The actual reply, JSON-encoded or URL-encoded
+     * @param method string The method that has been called
+     * @param reply  string The actual reply, JSON-encoded or URL-encoded
      *
      * @return array|object The parsed reply
      */
