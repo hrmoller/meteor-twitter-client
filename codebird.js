@@ -789,6 +789,7 @@ Codebird = function () {
                 } catch (e) {}
                 var reply = _parseApiReply(method_template, xml.responseText);
                 reply.httpstatus = httpstatus;
+                //TODO XXX This should be done more generic
                 Meteor.codebirdCallback(reply, uid, method_template);
                 //callback(reply, uid, method_template);
             }
