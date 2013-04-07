@@ -1,0 +1,8 @@
+{
+    "name": "twitter_client",
+    "description": "Twitter client for Meteor based on the codebird-js library",
+    "homepage": "https://github.com/Moller/twitter_client",
+    "author": "Martin Møller",
+    "version": "0.0.1",
+    "git": "git://github.com/Moller/twitter_client.git"
+}
