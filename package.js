@@ -1,7 +1,7 @@
 Package.describe({
     summary: "Twitter client for Meteor",
     description: "Twitter client for Meteor based on the codebird-js library",
-    version: "0.0.1",
+    version: "0.0.2",
     repository: {
         "type": "git",
         "url": "git://github.com/Moller/twitter_client.git"
