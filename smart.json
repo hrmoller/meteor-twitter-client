@@ -3,6 +3,6 @@
     "description": "Twitter client for Meteor based on the codebird-js library",
     "homepage": "https://github.com/Moller/twitter_client",
     "author": "Martin Møller",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "git": "git://github.com/Moller/twitter_client.git"
 }
