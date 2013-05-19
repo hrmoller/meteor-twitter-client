@@ -25,6 +25,8 @@ var IMAGETYPE_GIF = 1,
     IMAGETYPE_JPEG = 2,
     IMAGETYPE_PNG = 3;
 
+var Fiber = Npm.require('fibers');
+
 /**
  * A simple wrapper for the Twitter API
  *
@@ -89,13 +91,13 @@ Codebird = function () {
     var _version = '2.2.3';
 
     /**
-    * Sets the OAuth consumer key and secret (App key)
-    *
-    * @param string key    OAuth consumer key
-    * @param string secret OAuth consumer secret
-    *
-    * @return void
-    */
+     * Sets the OAuth consumer key and secret (App key)
+     *
+     * @param string key    OAuth consumer key
+     * @param string secret OAuth consumer secret
+     *
+     * @return void
+     */
     var setConsumerKey = function (key, secret) {
         _oauth_consumer_key = key;
         _oauth_consumer_secret = secret;
@@ -222,7 +224,6 @@ Codebird = function () {
             }
         }
     }
-
     /**
      * Main API handler working on any requests you issue
      *
@@ -231,7 +232,7 @@ Codebird = function () {
      *
      * @return mixed The API reply encoded in the set return_format
      */
-    var __call = function (fn, params, callback, uid) {
+    var __call = function (fn, params, uid, callback) {
         if (typeof params == 'undefined') {
             params = {};
         }
@@ -299,7 +300,7 @@ Codebird = function () {
         var httpmethod = _detectMethod(method_template, apiparams);
         var multipart = _detectMultipart(method_template);
 
-        return _callApi(httpmethod, method, method_template, apiparams, multipart, callback, uid);
+        return _callApi(httpmethod, method, method_template, apiparams, multipart, uid, callback);
     };
 
     /**
@@ -369,7 +370,7 @@ Codebird = function () {
     var _url = function (data) {
         if (typeof data == 'array') {
             return array_map([ // TODO
-            this, '_url'], data);
+                this, '_url'], data);
         } else if ((/boolean|number|string/).test(typeof data)) {
             return encodeURIComponent(data).replace(/!/g, '%21').replace(/'/g, '%27').replace(/\(/g, '%28').replace(/\)/g, '%29').replace(/\*/g, '%2A');
         } else {
@@ -425,7 +426,7 @@ Codebird = function () {
      */
     var _ksort = function (a) {
         var b = {},
-        f = [],
+            f = [],
             c, d, e = [];
         for (d in a) a.hasOwnProperty && f.push(d);
         f.sort(function (g, h) {
@@ -731,19 +732,19 @@ Codebird = function () {
     };
 
     /**
-    * Calls the API using cURL
-    *
-    * @param httpmethod         string          The HTTP method to use for making the request
-    * @param method             string          The API method to call
-    * @param method_template    string          The templated API method to call
-    * @param multipart          bool optional   Whether to use multipart/form-data
-    * @param params             Object          Parameters that should be encoded into the request
-    * @param callback           function        The function to call with the API call result
-    * @param uid                string          UID of the user currently being processed
-    *
-    * @return mixed The API reply, encoded in the set return_format
-    */
-    var _callApi = function (httpmethod, method, method_template, params, multipart, callback, uid) {
+     * Calls the API using cURL
+     *
+     * @param httpmethod         string          The HTTP method to use for making the request
+     * @param method             string          The API method to call
+     * @param method_template    string          The templated API method to call
+     * @param multipart          bool optional   Whether to use multipart/form-data
+     * @param params             Object          Parameters that should be encoded into the request
+     * @param uid                string          UID of the user currently being processed
+     * @param callback           function        The function to call with the API call result
+     *
+     * @return mixed The API reply, encoded in the set return_format
+     */
+    var _callApi = function (httpmethod, method, method_template, params, multipart, uid, callback) {
         if (typeof params == 'undefined') {
             var params = {};
         }
@@ -758,7 +759,6 @@ Codebird = function () {
 
         var xml;
         xml = new XMLHttpRequest();
-        //console.log(xml);
 
         try {
             xml = new XMLHttpRequest();
@@ -789,9 +789,10 @@ Codebird = function () {
                 } catch (e) {}
                 var reply = _parseApiReply(method_template, xml.responseText);
                 reply.httpstatus = httpstatus;
-                //TODO XXX This should be done more generic
-                Meteor.codebirdCallback(reply, uid, method_template);
-                //callback(reply, uid, method_template);
+
+                Fiber(function() {
+                    callback(reply, uid, method_template);
+                }).run();
             }
         };
         xml.send(httpmethod == "GET" ? null : post_fields);
